@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jiralyn @ 18 | Ways to be Wicked</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:ital,wght@0,700;1,400&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --wicked-red: #b30000;
+            --bright-red: #ff0000;
+            --royal-gold: #c5a059;
+            --deep-black: #050505;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: var(--deep-black);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .page-wrapper {
+            width: 100%;
+            min-height: 100vh;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, rgba(179, 0, 0, 0.25) 0%, transparent 80%);
+            z-index: 2;
+        }
+
+        .card {
+            position: relative;
+            max-width: 900px;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.98);
+            display: flex;
+            flex-direction: row;
+            border: 1px solid var(--wicked-red);
+            box-shadow: 0 0 30px rgba(179, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        /* --- SLIDESHOW SECTION --- */
+        .celebrant-side {
+            flex: 1;
+            min-height: 500px;
+            border-right: 1px solid var(--wicked-red);
+            position: relative;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transform: scale(1.15);
+            transition: opacity 1.5s ease-in-out, transform 6s ease-out;
+            z-index: 1;
+        }
+
+        .slide.active { 
+            opacity: 1; 
+            transform: scale(1); 
+            z-index: 2;
+        }
+
+        .celebrant-side::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, transparent 60%, rgba(10, 10, 10, 1));
+            z-index: 5;
+        }
+
+        /* --- INFO SECTION --- */
+        .info-side {
+            flex: 1.2;
+            padding: 40px 30px 60px 30px; 
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            z-index: 6;
+        }
+
+        .long-live {
+            font-family: 'Cinzel Decorative';
+            font-size: 10px;
+            letter-spacing: 6px;
+            color: var(--bright-red);
+            margin-bottom: 15px;
+            text-shadow: 0 0 8px var(--bright-red);
+        }
+
+        .name {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 6vw, 45px);
+            color: #fff;
+            margin: 5px 0;
+        }
+
+        .tagline {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: var(--royal-gold);
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .event-details {
+            font-size: 12px;
+            letter-spacing: 1px;
+            color: #ccc;
+            line-height: 1.8;
+            border-top: 1px solid rgba(179, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(179, 0, 0, 0.3);
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+
+        /* --- TIMER WITH SECONDS --- */
+        #timer { display: flex; justify-content: center; gap: 12px; }
+        .t-val { font-family: 'Cinzel Decorative'; font-size: 20px; color: var(--bright-red); display: block; min-width: 35px; }
+        .t-lbl { font-size: 8px; color: var(--royal-gold); text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- SIGNATURE (BOTTOM RIGHT) --- */
+        .signature { 
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            font-size: 9px; 
+            color: var(--bright-red); 
+            opacity: 0.5; 
+            letter-spacing: 1.5px;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+        }
+
+        /* --- MOBILE --- */
+        @media (max-width: 768px) {
+            .card { flex-direction: column; }
+            .celebrant-side { min-height: 400px; border-right: none; border-bottom: 1px solid var(--wicked-red); }
+            .celebrant-side::after { background: linear-gradient(to bottom, transparent 60%, rgba(10, 10, 10, 1)); }
+            .info-side { padding: 40px 20px 70px 20px; }
+            .signature { bottom: 15px; right: 0; left: 0; text-align: center; } 
+        }
+
+        #overlay {
+            position: fixed; inset: 0; background: #000;
+            z-index: 1000; display: flex; justify-content: center; align-items: center;
+            transition: 1.5s ease;
+        }
+
+        .enter-btn {
+            background: none; border: 1px solid var(--wicked-red);
+            color: var(--wicked-red); padding: 15px 35px; cursor: pointer;
+            font-family: 'Cinzel Decorative'; letter-spacing: 3px;
+            transition: 0.4s;
+        }
+        .enter-btn:hover {
+            background: var(--wicked-red);
+            color: white;
+            box-shadow: 0 0 20px var(--wicked-red);
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop><source src="music.mp3" type="audio/mpeg"></audio>
+
+    <div id="overlay">
+        <button class="enter-btn" onclick="reveal()">Accept Invitation</button>
+    </div>
+
+    <canvas id="fireCanvas"></canvas>
+
+    <div class="page-wrapper">
+        <div class="card">
+            <div class="celebrant-side" id="slideshow">
+                <div class="slide active" style="background-image: url('image1.jpg');"></div>
+                <div class="slide" style="background-image: url('image2.jpg');"></div>
+                <div class="slide" style="background-image: url('image3.jpg');"></div>
+            </div>
+            
+            <div class="info-side">
+                <div class="long-live">LONG LIVE EVIL</div>
+                <span style="font-size: 10px; letter-spacing: 3px; color: var(--royal-gold); font-family: 'Cinzel Decorative';">HAPPY 18TH BIRTHDAY </span>
+                <h1 class="name">Jiralyn O Lagunay</h1>
+                <div class="tagline">"Ways to be Wicked"</div>
+
+                <div class="event-details">
+                    <strong style="color:var(--bright-red); font-family:'Cinzel Decorative';">APRIL 7-8, 2026</strong><br>
+                    6:00 PM | OVERNIGHT SWIMMING<br>
+                    CINCO SAIS (F. ASIS RESIDENCE) AIRBNB<br>
+                    SAN JOSE, TACLOBAN CITY
+                </div>
+
+                <div id="timer">
+                    <div><span class="t-val" id="days">00</span><span class="t-lbl">Days</span></div>
+                    <div><span class="t-val" id="hours">00</span><span class="t-lbl">Hrs</span></div>
+                    <div><span class="t-val" id="mins">00</span><span class="t-lbl">Mins</span></div>
+                    <div><span class="t-val" id="secs">00</span><span class="t-lbl">Secs</span></div>
+                </div>
+
+                <div class="signature">Code by RayChristian</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function reveal() {
+            document.getElementById('overlay').style.opacity = '0';
+            setTimeout(() => document.getElementById('overlay').style.display = 'none', 1500);
+            document.getElementById('bgMusic').play().catch(e => console.log("Music blocked"));
+            startSlideshow();
+        }
+
+        function startSlideshow() {
+            const slides = document.querySelectorAll('.slide');
+            let current = 0;
+            setInterval(() => {
+                slides[current].classList.remove('active');
+                current = (current + 1) % slides.length;
+                slides[current].classList.add('active');
+            }, 5000); 
+        }
+
+        // Updated Timer Logic with Seconds
+        const targetDate = new Date("April 7, 2026 18:00:00").getTime();
+        setInterval(() => {
+            const now = new Date().getTime();
+            const diff = targetDate - now;
+            if (diff > 0) {
+                document.getElementById("days").innerText = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+                document.getElementById("hours").innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+                document.getElementById("mins").innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+                document.getElementById("secs").innerText = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0');
+            } else {
+                // If event started
+                document.getElementById("timer").innerHTML = "<div style='color:var(--bright-red); font-family:\"Cinzel Decorative\"; letter-spacing:2px;'>PARTY IN PROGRESS</div>";
+            }
+        }, 1000);
+
+        const canvas = document.getElementById("fireCanvas");
+        const ctx = canvas.getContext("2d");
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+        
+        let embers = [];
+        for(let i=0; i<150; i++) {
+            embers.push({
+                x: Math.random() * canvas.width,
+                y: canvas.height + Math.random() * 200,
+                s: Math.random() * 2 + 1,
+                vx: Math.random() * 0.8 - 0.4,
+                vy: Math.random() * 1.5 + 1,
+                o: Math.random(),
+                c: Math.random() > 0.4 ? "#ff0000" : "#ff4500"
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            embers.forEach(e => {
+                ctx.globalAlpha = e.o;
+                ctx.fillStyle = e.c;
+                ctx.beginPath(); ctx.arc(e.x, e.y, e.s, 0, Math.PI*2); ctx.fill();
+                e.y -= e.vy; e.x += e.vx; e.o -= 0.003;
+                if(e.y < -20 || e.o <= 0) { 
+                    e.y = canvas.height + 20; 
+                    e.x = Math.random() * canvas.width; 
+                    e.o = Math.random(); 
+                }
+            });
+            requestAnimationFrame(draw);
+        }
+        draw();
+    </script>
+</body>
+</html>
