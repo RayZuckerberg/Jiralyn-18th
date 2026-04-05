@@ -60,7 +60,6 @@
             overflow: hidden;
         }
 
-        /* --- SLIDESHOW SECTION --- */
         .celebrant-side {
             flex: 1;
             min-height: 500px;
@@ -68,6 +67,33 @@
             position: relative;
             overflow: hidden;
             background: #000;
+        }
+
+        .portal-overlay-left, .portal-overlay-right {
+            position: absolute;
+            top: -50px;
+            bottom: -50px;
+            width: 100px;
+            z-index: 4;
+            pointer-events: none;
+            filter: blur(25px);
+            opacity: 0.8;
+            animation: rotatePortal 10s linear infinite;
+        }
+
+        .portal-overlay-left {
+            left: -50px;
+            background: conic-gradient(from 0deg, transparent, var(--wicked-red), transparent, var(--bright-red), transparent);
+        }
+
+        .portal-overlay-right {
+            right: -50px;
+            background: conic-gradient(from 180deg, transparent, var(--wicked-red), transparent, var(--bright-red), transparent);
+        }
+
+        @keyframes rotatePortal {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .slide {
@@ -95,7 +121,6 @@
             z-index: 5;
         }
 
-        /* --- INFO SECTION --- */
         .info-side {
             flex: 1.2;
             padding: 40px 30px 60px 30px; 
@@ -121,6 +146,13 @@
             font-size: clamp(28px, 6vw, 45px);
             color: #fff;
             margin: 5px 0;
+            text-shadow: 0 0 15px var(--wicked-red), 0 0 30px var(--wicked-red);
+            animation: pulseName 3s infinite ease-in-out;
+        }
+
+        @keyframes pulseName {
+            0%, 100% { text-shadow: 0 0 10px var(--wicked-red), 0 0 20px var(--wicked-red); }
+            50% { text-shadow: 0 0 20px var(--bright-red), 0 0 40px var(--bright-red); }
         }
 
         .tagline {
@@ -142,12 +174,10 @@
             margin-bottom: 20px;
         }
 
-        /* --- TIMER WITH SECONDS --- */
         #timer { display: flex; justify-content: center; gap: 12px; }
         .t-val { font-family: 'Cinzel Decorative'; font-size: 20px; color: var(--bright-red); display: block; min-width: 35px; }
         .t-lbl { font-size: 8px; color: var(--royal-gold); text-transform: uppercase; letter-spacing: 1px; }
 
-        /* --- SIGNATURE (BOTTOM RIGHT) --- */
         .signature { 
             position: absolute;
             bottom: 15px;
@@ -160,7 +190,6 @@
             text-transform: uppercase;
         }
 
-        /* --- MOBILE --- */
         @media (max-width: 768px) {
             .card { flex-direction: column; }
             .celebrant-side { min-height: 400px; border-right: none; border-bottom: 1px solid var(--wicked-red); }
@@ -201,6 +230,8 @@
     <div class="page-wrapper">
         <div class="card">
             <div class="celebrant-side" id="slideshow">
+                <div class="portal-overlay-left"></div>
+                <div class="portal-overlay-right"></div>
                 <div class="slide active" style="background-image: url('image1.jpg');"></div>
                 <div class="slide" style="background-image: url('image2.jpg');"></div>
                 <div class="slide" style="background-image: url('image3.jpg');"></div>
@@ -213,8 +244,8 @@
                 <div class="tagline">"Ways to be Wicked"</div>
 
                 <div class="event-details">
-                    <strong style="color:var(--bright-red); font-family:'Cinzel Decorative';">APRIL 7-8, 2026</strong><br>
-                    6:00 PM | OVERNIGHT SWIMMING<br>
+                    <strong style="color:var(--bright-red); font-family:'Cinzel Decorative';">APRIL 7, 2026</strong><br>
+                    OVERNIGHT SWIMMING<br>
                     CINCO SAIS (F. ASIS RESIDENCE) AIRBNB<br>
                     SAN JOSE, TACLOBAN CITY
                 </div>
@@ -249,19 +280,19 @@
             }, 5000); 
         }
 
-        // Updated Timer Logic with Seconds
-        const targetDate = new Date("April 7, 2026 18:00:00").getTime();
+        const targetDate = new Date("April 7, 2026 00:00:00").getTime();
+
         setInterval(() => {
             const now = new Date().getTime();
             const diff = targetDate - now;
+
             if (diff > 0) {
                 document.getElementById("days").innerText = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
                 document.getElementById("hours").innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
                 document.getElementById("mins").innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
                 document.getElementById("secs").innerText = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0');
             } else {
-                // If event started
-                document.getElementById("timer").innerHTML = "<div style='color:var(--bright-red); font-family:\"Cinzel Decorative\"; letter-spacing:2px;'>PARTY IN PROGRESS</div>";
+                document.getElementById("timer").innerHTML = "<div style='color:var(--bright-red); font-family:\"Cinzel Decorative\"; letter-spacing:2px;'>TIME TO BE WICKED</div>";
             }
         }, 1000);
 
